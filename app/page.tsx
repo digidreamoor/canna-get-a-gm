@@ -124,6 +124,10 @@ export default function Home() {
   }
 
   return (
+    <Head>
+        <title>Canna Get A GM</title> {/* Set your custom title here */}
+        <meta name="description" content="Customize your Hempino" />
+      </Head>
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#FF9999] to-[#FFCC99] p-4 relative overflow-hidden">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_10px_10px,#FF6666_2px,transparent_2px)] bg-[length:20px_20px] opacity-30" />
 
