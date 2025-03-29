@@ -141,7 +141,7 @@ export default function Home() {
             type="text"
             value={tokenId}
             onChange={(e) => setTokenId(e.target.value)}
-            className="w-full p-2 border-2 border-[#FF66CC] rounded focus:outline-none focus:border-[#66CCFF] transition-all"
+            className="w-full p-2 border-2 border-[#FF66CC] text-[#212121] rounded focus:outline-none focus:border-[#66CCFF] transition-all"
             placeholder="Enter Token ID (e.g., 4916)"
           />
         </div>
@@ -154,7 +154,7 @@ export default function Home() {
           <select
             value={overlay}
             onChange={(e) => setOverlay(e.target.value)}
-            className="w-full p-2 border-2 border-[#FF66CC] rounded focus:outline-none focus:border-[#66CCFF] transition-all"
+            className="w-full p-2 border-2 border-[#FF66CC] text-[#212121] rounded focus:outline-none focus:border-[#66CCFF] transition-all"
           >
             <option value="None">None</option>
             <option value="Weed Green">Weed Green</option>
