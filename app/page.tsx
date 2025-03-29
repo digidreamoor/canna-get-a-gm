@@ -129,7 +129,7 @@ export default function Home() {
 
       <div className="bg-white bg-opacity-90 p-8 rounded-lg shadow-lg max-w-md w-full relative z-10">
         <h1 className="text-3xl font-bold text-[#ff8098] mb-4 text-center">
-          Canna Get A ____
+          Canna Get A GM
         </h1>
 
         {/* Token ID Input */}
