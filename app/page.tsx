@@ -134,7 +134,7 @@ export default function Home() {
 
         {/* Token ID Input */}
         <div className="mb-4">
-          <label className="block text-[#00CC00] font-semibold mb-2">
+          <label className="block text-[#ff8098] font-semibold mb-2">
             Token ID
           </label>
           <input
@@ -148,7 +148,7 @@ export default function Home() {
 
         {/* Overlay Dropdown */}
         <div className="mb-4">
-          <label className="block text-[#00CC00] font-semibold mb-2">
+          <label className="block text-[#ff8098] font-semibold mb-2">
             Strain Type
           </label>
           <select
@@ -165,7 +165,7 @@ export default function Home() {
 
         {/* Preview */}
         <div className="mb-4">
-          <h2 className="text-xl font-semibold text-[#00CC00] mb-2">
+          <h2 className="text-xl font-semibold text-[#ff8098] mb-2">
             Preview
           </h2>
           {error ? (
