@@ -128,8 +128,8 @@ export default function Home() {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_10px_10px,#FF6666_2px,transparent_2px)] bg-[length:20px_20px] opacity-30" />
 
       <div className="bg-white bg-opacity-90 p-8 rounded-lg shadow-lg max-w-md w-full relative z-10">
-        <h1 className="text-3xl font-bold text-[#00CC00] mb-4 text-center">
-          Canna Get A GM
+        <h1 className="text-3xl font-bold text-[#b28fff] mb-4 text-center">
+          Canna Get A
         </h1>
 
         {/* Token ID Input */}
