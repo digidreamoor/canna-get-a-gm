@@ -2,15 +2,13 @@
 
 import { useState, useEffect, useRef } from "react";
 
-// Fetch image URL
+// Fetch image URL (unchanged)
 async function getNFTImageUrl(tokenId: string) {
   try {
-    // Construct the image URL dynamically using the token ID
     const imageUrl = `https://bafybeie6ohy6d4fbzl3cc2twv5a6l4ywez22oy4qlkkuf672e5mpusficq.ipfs.w3s.link/${tokenId}.png`;
     const proxiedImageUrl = `/api/fetch-metadata?url=${encodeURIComponent(imageUrl)}&type=image`;
     console.log("Proxied Image URL:", proxiedImageUrl);
 
-    // Test if the proxy API works
     try {
       const response = await fetch(proxiedImageUrl);
       if (response.ok) {
@@ -18,32 +16,28 @@ async function getNFTImageUrl(tokenId: string) {
         return proxiedImageUrl;
       } else {
         console.log("Proxy API fetch failed, falling back to direct URL:", imageUrl);
-        return imageUrl; // Fallback to direct URL if proxy fails
+        return imageUrl;
       }
     } catch (error) {
-      // Type the error as Error
       const err = error as Error;
       console.log("Proxy API fetch error, falling back to direct URL:", imageUrl, err.message);
-      return imageUrl; // Fallback to direct URL if proxy fetch fails
+      return imageUrl;
     }
   } catch (error) {
-    // Type the error as Error
     const err = error as Error;
     console.log("Error fetching NFT image URL:", err.message);
-    // Fallback image if the entire fetch fails
     return "https://via.placeholder.com/1500x1500.png?text=Image+Not+Found";
   }
 }
 
 export default function Home() {
   const [tokenId, setTokenId] = useState("4916");
-  const [overlay, setOverlay] = useState("None"); // Default to "None"
+  const [overlay, setOverlay] = useState("None");
   const [baseImageUrl, setBaseImageUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isMounted, setIsMounted] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  // Map dropdown options to overlay images ("None" has no overlay)
   const overlayImages: { [key: string]: string | null } = {
     "None": null,
     "Weed Green": "/overlays/WeedGreen.png",
@@ -51,12 +45,10 @@ export default function Home() {
     "Acapulco Gold": "/overlays/AcapulcoGold.png",
   };
 
-  // Ensure the component is mounted on the client to avoid hydration issues
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
-  // Fetch base image URL when token ID changes
   useEffect(() => {
     if (!isMounted) return;
     setError(null);
@@ -71,7 +63,6 @@ export default function Home() {
       });
   }, [tokenId, isMounted]);
 
-  // Update the canvas preview when base image or overlay changes
   useEffect(() => {
     if (!isMounted || !baseImageUrl) {
       console.log("Not mounted or no baseImageUrl:", { isMounted, baseImageUrl });
@@ -91,22 +82,21 @@ export default function Home() {
     }
 
     const baseImg = new Image();
-    baseImg.src = baseImageUrl; // Remove crossOrigin since we're proxying
+    baseImg.src = baseImageUrl;
 
     baseImg.onload = () => {
       console.log("Base image loaded successfully:", baseImageUrl);
-      canvas.width = 1500; // Match the base image size
+      canvas.width = 1500;
       canvas.height = 1500;
       ctx.drawImage(baseImg, 0, 0, 1500, 1500);
 
-      // Only draw the overlay if it's not "None"
       if (overlay !== "None") {
         const overlayImg = new Image();
         overlayImg.src = overlayImages[overlay]!;
 
         overlayImg.onload = () => {
           console.log("Overlay image loaded successfully:", overlayImages[overlay]);
-          ctx.drawImage(overlayImg, 0, 0, 1500, 1500); // Overlay at full size
+          ctx.drawImage(overlayImg, 0, 0, 1500, 1500);
         };
         overlayImg.onerror = (e) => {
           console.log("Failed to load overlay image:", overlayImages[overlay], e);
@@ -118,6 +108,23 @@ export default function Home() {
       console.log("Failed to load base image:", baseImageUrl, e);
     };
   }, [baseImageUrl, overlay, isMounted]);
+
+  // Download function
+  const handleDownload = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    // Create a data URL from the canvas
+    const dataUrl = canvas.toDataURL("image/png");
+    
+    // Create a temporary link element
+    const link = document.createElement("a");
+    link.href = dataUrl;
+    link.download = `canna-gm-${tokenId}-${overlay.replace(" ", "-").toLowerCase() || "no-overlay"}.png`; // Dynamic filename
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   if (!isMounted) {
     return null;
@@ -179,6 +186,21 @@ export default function Home() {
           ) : (
             <p className="text-gray-500">Loading image...</p>
           )}
+        </div>
+
+        {/* Download Button */}
+        <div className="mt-4">
+          <button
+            onClick={handleDownload}
+            disabled={!baseImageUrl} // Disable if no image is loaded
+            className={`w-full p-2 rounded text-white font-semibold transition-all ${
+              baseImageUrl
+                ? "bg-[#FF66CC] hover:bg-[#FF3399]"
+                : "bg-gray-400 cursor-not-allowed"
+            }`}
+          >
+            Download Image
+          </button>
         </div>
       </div>
     </div>
