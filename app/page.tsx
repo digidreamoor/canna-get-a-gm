@@ -41,9 +41,9 @@ export default function Home() {
 
   const overlayImages: { [key: string]: string | null } = {
     "None": null,
-    "Weed Green": "/overlays/WeedGreen.png",
-    "Purple Haze": "/overlays/PurpleHaze.png",
-    "Acapulco Gold": "/overlays/AcapulcoGold.png",
+    "GM Coffee Green": "/overlays/GMCoffeeGreen.png",
+    "GM Coffee Purple": "/overlays/GMCoffeePurple.png",
+    "GM Coffee Gold": "/overlays/GMCoffeeGold.png",
     "Taco Green": "/overlays/TacoGreen.png",
     "Taco Purple": "/overlays/TacoPurple.png",
     "Taco Gold": "/overlays/TacoGold.png",
@@ -145,7 +145,7 @@ export default function Home() {
 
         <div className="bg-white bg-opacity-90 p-8 rounded-lg shadow-lg max-w-md w-full relative z-10">
           <h1 className="text-3xl font-bold text-[#ff8098] mb-4 text-center">
-            Canna Get A GM
+            Hempino Head Shop
           </h1>
 
           {/* Token ID Input */}
@@ -165,7 +165,7 @@ export default function Home() {
           {/* Overlay Dropdown */}
           <div className="mb-4">
             <label className="block text-[#ff8098] font-semibold mb-2">
-              Strain Type
+              Canna Get A...
             </label>
             <select
               value={overlay}
@@ -173,9 +173,9 @@ export default function Home() {
               className="w-full p-2 border-2 border-[#FF66CC] text-[#212121] rounded focus:outline-none focus:border-[#66CCFF] transition-all"
             >
               <option value="None">None</option>
-              <option value="Weed Green">Weed Green</option>
-              <option value="Purple Haze">Purple Haze</option>
-              <option value="Acapulco Gold">Acapulco Gold</option>
+              <option value="GM Coffee Green">GM Coffee Green</option>
+              <option value="GM Coffee Purple">GM Coffee Purple</option>
+              <option value="GM Coffee Gold">GM Coffee Gold</option>
               <option value="Taco Green">Taco Green</option>
               <option value="Taco Purple">Taco Purple</option>
               <option value="Taco Gold">Taco Gold</option>
