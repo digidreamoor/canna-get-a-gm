@@ -1,13 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import Head from "next/head"; // Import Head for metadata in client components
-
-// Metadata export for App Router (optional if using Head)
-export const metadata = {
-  title: "Hempino Head Shop",
-  description: "brought to you by digidreamoor",
-};
+import Head from "next/head"; // Import Head for metadata
 
 // Fetch image URL (unchanged)
 async function getNFTImageUrl(tokenId: string) {
@@ -135,11 +129,10 @@ export default function Home() {
 
   return (
     <>
-      {/* Add Head component to set metadata */}
+      {/* Set metadata using Head */}
       <Head>
         <title>Hempino Head Shop</title>
         <meta name="description" content="brought to you by digidreamoor" />
-        {/* Optionally, add Open Graph tags for better social sharing */}
         <meta property="og:title" content="Hempino Head Shop" />
         <meta property="og:description" content="brought to you by digidreamoor" />
       </Head>
