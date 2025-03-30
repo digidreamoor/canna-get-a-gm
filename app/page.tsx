@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import Head from "next/head"; // Import Head for metadata
 
 // Fetch image URL (unchanged)
 async function getNFTImageUrl(tokenId: string) {
@@ -40,9 +41,12 @@ export default function Home() {
 
   const overlayImages: { [key: string]: string | null } = {
     "None": null,
-    "Weed Green": "/overlays/WeedGreen.png",
-    "Purple Haze": "/overlays/PurpleHaze.png",
-    "Acapulco Gold": "/overlays/AcapulcoGold.png",
+    "GM Coffee Green": "/overlays/GMCoffeeGreen.png",
+    "GM Coffee Purple": "/overlays/GMCoffeePurple.png",
+    "GM Coffee Gold": "/overlays/GMCoffeeGold.png",
+    "Taco Green": "/overlays/TacoGreen.png",
+    "Taco Purple": "/overlays/TacoPurple.png",
+    "Taco Gold": "/overlays/TacoGold.png",
   };
 
   useEffect(() => {
@@ -109,18 +113,14 @@ export default function Home() {
     };
   }, [baseImageUrl, overlay, isMounted]);
 
-  // Download function
   const handleDownload = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    // Create a data URL from the canvas
     const dataUrl = canvas.toDataURL("image/png");
-    
-    // Create a temporary link element
     const link = document.createElement("a");
     link.href = dataUrl;
-    link.download = `canna-gm-${tokenId}-${overlay.replace(" ", "-").toLowerCase() || "no-overlay"}.png`; // Dynamic filename
+    link.download = `canna-gm-${tokenId}-${overlay.replace(" ", "-").toLowerCase() || "no-overlay"}.png`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -131,78 +131,91 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#FF9999] to-[#FFCC99] p-4 relative overflow-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_10px_10px,#FF6666_2px,transparent_2px)] bg-[length:20px_20px] opacity-30" />
+    <>
+      {/* Set metadata using Head */}
+      <Head>
+        <title>Hempino Head Shop</title>
+        <meta name="description" content="brought to you by digidreamoor" />
+        <meta property="og:title" content="Hempino Head Shop" />
+        <meta property="og:description" content="brought to you by digidreamoor" />
+      </Head>
 
-      <div className="bg-white bg-opacity-90 p-8 rounded-lg shadow-lg max-w-md w-full relative z-10">
-        <h1 className="text-3xl font-bold text-[#ff8098] mb-4 text-center">
-          Canna Get A GM
-        </h1>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#FF9999] to-[#FFCC99] p-4 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_10px_10px,#FF6666_2px,transparent_2px)] bg-[length:20px_20px] opacity-30" />
 
-        {/* Token ID Input */}
-        <div className="mb-4">
-          <label className="block text-[#ff8098] font-semibold mb-2">
-            Token ID
-          </label>
-          <input
-            type="text"
-            value={tokenId}
-            onChange={(e) => setTokenId(e.target.value)}
-            className="w-full p-2 border-2 border-[#FF66CC] text-[#212121] rounded focus:outline-none focus:border-[#66CCFF] transition-all"
-            placeholder="Enter Token ID (e.g., 4916)"
-          />
-        </div>
+        <div className="bg-white bg-opacity-90 p-8 rounded-lg shadow-lg max-w-md w-full relative z-10">
+          <h1 className="text-3xl font-bold text-[#ff8098] mb-4 text-center">
+            Hempino Head Shop
+          </h1>
 
-        {/* Overlay Dropdown */}
-        <div className="mb-4">
-          <label className="block text-[#ff8098] font-semibold mb-2">
-            Strain Type
-          </label>
-          <select
-            value={overlay}
-            onChange={(e) => setOverlay(e.target.value)}
-            className="w-full p-2 border-2 border-[#FF66CC] text-[#212121] rounded focus:outline-none focus:border-[#66CCFF] transition-all"
-          >
-            <option value="None">None</option>
-            <option value="Weed Green">Weed Green</option>
-            <option value="Purple Haze">Purple Haze</option>
-            <option value="Acapulco Gold">Acapulco Gold</option>
-          </select>
-        </div>
-
-        {/* Preview */}
-        <div className="mb-4">
-          <h2 className="text-xl font-semibold text-[#ff8098] mb-2">
-            Preview
-          </h2>
-          {error ? (
-            <p className="text-red-500">{error}</p>
-          ) : baseImageUrl ? (
-            <canvas
-              ref={canvasRef}
-              className="w-full border-2 border-[#FF66CC] rounded"
-              style={{ maxWidth: "100%", height: "auto" }}
+          {/* Token ID Input */}
+          <div className="mb-4">
+            <label className="block text-[#ff8098] font-semibold mb-2">
+              Token ID
+            </label>
+            <input
+              type="text"
+              value={tokenId}
+              onChange={(e) => setTokenId(e.target.value)}
+              className="w-full p-2 border-2 border-[#FF66CC] text-[#212121] rounded focus:outline-none focus:border-[#66CCFF] transition-all"
+              placeholder="Enter Token ID (e.g., 4916)"
             />
-          ) : (
-            <p className="text-gray-500">Loading image...</p>
-          )}
-        </div>
+          </div>
 
-        {/* Download Button */}
-        <div className="mt-4">
-          <button
-            onClick={handleDownload}
-            disabled={!baseImageUrl} // Disable if no image is loaded
-            className={`w-full p-2 rounded text-white font-semibold transition-all ${
-              baseImageUrl
-                ? "bg-[#FF66CC] hover:bg-[#FF3399]"
-                : "bg-gray-400 cursor-not-allowed"
-            }`}
-          >
-            Download Image
-          </button>
+          {/* Overlay Dropdown */}
+          <div className="mb-4">
+            <label className="block text-[#ff8098] font-semibold mb-2">
+              Canna Get A...
+            </label>
+            <select
+              value={overlay}
+              onChange={(e) => setOverlay(e.target.value)}
+              className="w-full p-2 border-2 border-[#FF66CC] text-[#212121] rounded focus:outline-none focus:border-[#66CCFF] transition-all"
+            >
+              <option value="None">None</option>
+              <option value="GM Coffee Green">GM Coffee Green</option>
+              <option value="GM Coffee Purple">GM Coffee Purple</option>
+              <option value="GM Coffee Gold">GM Coffee Gold</option>
+              <option value="Taco Green">Taco Green</option>
+              <option value="Taco Purple">Taco Purple</option>
+              <option value="Taco Gold">Taco Gold</option>
+            </select>
+          </div>
+
+          {/* Preview */}
+          <div className="mb-4">
+            <h2 className="text-xl font-semibold text-[#ff8098] mb-2">
+              Preview
+            </h2>
+            {error ? (
+              <p className="text-red-500">{error}</p>
+            ) : baseImageUrl ? (
+              <canvas
+                ref={canvasRef}
+                className="w-full border-2 border-[#FF66CC] rounded"
+                style={{ maxWidth: "100%", height: "auto" }}
+              />
+            ) : (
+              <p className="text-gray-500">Loading image...</p>
+            )}
+          </div>
+
+          {/* Download Button */}
+          <div className="mt-4">
+            <button
+              onClick={handleDownload}
+              disabled={!baseImageUrl}
+              className={`w-full p-2 rounded text-white font-semibold transition-all ${
+                baseImageUrl
+                  ? "bg-[#FF66CC] hover:bg-[#FF3399]"
+                  : "bg-gray-400 cursor-not-allowed"
+              }`}
+            >
+              Download Image
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
