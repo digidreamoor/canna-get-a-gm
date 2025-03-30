@@ -31,7 +31,7 @@ async function getNFTImageUrl(tokenId: string) {
 }
 
 export default function Home() {
-  const [tokenId, setTokenId] = useState("1182");
+  const [tokenId, setTokenId] = useState("77");
   const [overlay, setOverlay] = useState("None");
   const [baseImageUrl, setBaseImageUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
