@@ -47,6 +47,9 @@ export default function Home() {
     "Taco Green": "/overlays/TacoGreen.png",
     "Taco Purple": "/overlays/TacoPurple.png",
     "Taco Gold": "/overlays/TacoGold.png",
+    "Bearish Green": "/overlays/BearishGreen.png",
+    "Bearish Purple": "/overlays/BearishPurple.png",
+    "Bearish Gold": "/overlays/BearishGold.png",
   };
 
   useEffect(() => {
@@ -179,6 +182,9 @@ export default function Home() {
               <option value="Taco Green">Taco Green</option>
               <option value="Taco Purple">Taco Purple</option>
               <option value="Taco Gold">Taco Gold</option>
+              <option value="Bearish Green">Bearish Green</option>
+              <option value="Bearish Purple">Bearish Purple</option>
+              <option value="Bearish Gold">Bearish Gold</option>
             </select>
           </div>
 
