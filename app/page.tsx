@@ -50,6 +50,9 @@ export default function Home() {
     "Bearish Green": "/overlays/BearishGreen.png",
     "Bearish Purple": "/overlays/BearishPurple.png",
     "Bearish Gold": "/overlays/BearishGold.png",
+    "Canna Banana Green": "/overlays/CannaBananaGreen.png",
+    "Canna Banana Purple": "/overlays/CannaBananaPurple.png",
+    "Canna Banana Gold": "/overlays/CannaBananaGold.png",
   };
 
   useEffect(() => {
@@ -161,7 +164,7 @@ export default function Home() {
               value={tokenId}
               onChange={(e) => setTokenId(e.target.value)}
               className="w-full p-2 border-2 border-[#FF66CC] text-[#212121] rounded focus:outline-none focus:border-[#66CCFF] transition-all"
-              placeholder="Enter Token ID (e.g., 4916)"
+              placeholder="Enter Token ID (e.g., 420)"
             />
           </div>
 
@@ -185,6 +188,9 @@ export default function Home() {
               <option value="Bearish Green">Bearish Green</option>
               <option value="Bearish Purple">Bearish Purple</option>
               <option value="Bearish Gold">Bearish Gold</option>
+              <option value="Canna Banana Green">Canna Banana Green</option>
+              <option value="Canna Banana Purple">Canna Banana Purple</option>
+              <option value="Canna Banana Gold">Canna Banana Gold</option>
             </select>
           </div>
 
