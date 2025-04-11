@@ -1,33 +1,54 @@
-"use client";
+import { useState, useRef, useEffect } from "react";
+import Head from "next/head";
+import { load } from "cheerio";
 
-import { useState, useEffect, useRef } from "react";
-import Head from "next/head"; // Import Head for metadata
+const overlayImages: { [key: string]: { [key: string]: string | null } } = {
+  "None": {
+    "Weed Green": null,
+    "Purple Haze": null,
+    "Acapulco Gold": null,
+  },
+  "GM Coffee": {
+    "Weed Green": "/overlays/GMCoffeeGreen.png",
+    "Purple Haze": "/overlays/GMCoffeePurple.png",
+    "Acapulco Gold": "/overlays/GMCoffeeGold.png",
+  },
+  "Taco": {
+    "Weed Green": "/overlays/TacoGreen.png",
+    "Purple Haze": "/overlays/TacoPurple.png",
+    "Acapulco Gold": "/overlays/TacoGold.png",
+  },
+  "Bearish": {
+    "Weed Green": "/overlays/BearishGreen.png",
+    "Purple Haze": "/overlays/BearishPurple.png",
+    "Acapulco Gold": "/overlays/BearishGold.png",
+  },
+  "Canna Banana": {
+    "Weed Green": "/overlays/CannaBananaGreen.png",
+    "Purple Haze": "/overlays/CannaBananaPurple.png",
+    "Acapulco Gold": "/overlays/CannaBananaGold.png",
+  },
+};
 
-// Fetch image URL (unchanged)
-async function getNFTImageUrl(tokenId: string) {
+async function scrapeStrainType(tokenId: string): Promise<string | null> {
   try {
-    const imageUrl = `https://bafybeie6ohy6d4fbzl3cc2twv5a6l4ywez22oy4qlkkuf672e5mpusficq.ipfs.w3s.link/${tokenId}.png`;
-    const proxiedImageUrl = `/api/fetch-metadata?url=${encodeURIComponent(imageUrl)}&type=image`;
-    console.log("Proxied Image URL:", proxiedImageUrl);
-
-    try {
-      const response = await fetch(proxiedImageUrl);
-      if (response.ok) {
-        console.log("Proxy API fetch successful");
-        return proxiedImageUrl;
-      } else {
-        console.log("Proxy API fetch failed, falling back to direct URL:", imageUrl);
-        return imageUrl;
-      }
-    } catch (error) {
-      const err = error as Error;
-      console.log("Proxy API fetch error, falling back to direct URL:", imageUrl, err.message);
-      return imageUrl;
+    const url = \`https://magiceden.us/item-details/abstract/0x66f7b491691eb85b17e15a8ebf3ced2adbec1996/\${tokenId}\`;
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(\`Failed to fetch page: \${response.status}\`);
     }
-  } catch (error) {
-    const err = error as Error;
-    console.log("Error fetching NFT image URL:", err.message);
-    return "https://via.placeholder.com/1500x1500.png?text=Image+Not+Found";
+    const html = await response.text();
+    const $ = load(html);
+    const strainTypeElement = $("//div[text()='Strain']/following-sibling::div");
+    if (strainTypeElement.length > 0) {
+      return strainTypeElement.text().trim();
+    } else {
+      console.warn("Strain type element not found on the page.");
+      return null;
+    }
+  } catch (error: any) {
+    console.error(\`Error scraping strain type: \${error.message}\`);
+    return null;
   }
 }
 
@@ -35,104 +56,89 @@ export default function Home() {
   const [tokenId, setTokenId] = useState("77");
   const [overlay, setOverlay] = useState("None");
   const [baseImageUrl, setBaseImageUrl] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null
+>(null);
   const [isMounted, setIsMounted] = useState(false);
+  const [strainType, setStrainType] = useState<string | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  const overlayImages: { [key: string]: string | null } = {
-    "None": null,
-    "GM Coffee Green": "/overlays/GMCoffeeGreen.png",
-    "GM Coffee Purple": "/overlays/GMCoffeePurple.png",
-    "GM Coffee Gold": "/overlays/GMCoffeeGold.png",
-    "Taco Green": "/overlays/TacoGreen.png",
-    "Taco Purple": "/overlays/TacoPurple.png",
-    "Taco Gold": "/overlays/TacoGold.png",
-  };
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
   useEffect(() => {
-    if (!isMounted) return;
-    setError(null);
     setBaseImageUrl(null);
-    if (!tokenId) return;
+    setError(null);
+    setStrainType(null);
 
-    getNFTImageUrl(tokenId)
-      .then((url) => setBaseImageUrl(url))
-      .catch((err) => {
-        setError(err.message);
-        setBaseImageUrl(null);
-      });
-  }, [tokenId, isMounted]);
+    if (tokenId) {
+      async function fetchMetadata() {
+        try {
+          const strain = await scrapeStrainType(tokenId);
+          if (strain) {
+            setStrainType(strain);
+          } else {
+            setError("Could not retrieve strain type from metadata.");
+          }
+        } catch (err: any) {
+          setError(\`Error fetching metadata: \${err.message}\`);
+        }
+      }
+
+      fetchMetadata();
+
+      const imageUrl = \`/api/images/gm/\${tokenId}\`;
+      setBaseImageUrl(imageUrl);
+    }
+  }, [tokenId]);
 
   useEffect(() => {
-    if (!isMounted || !baseImageUrl) {
-      console.log("Not mounted or no baseImageUrl:", { isMounted, baseImageUrl });
-      return;
-    }
-
     const canvas = canvasRef.current;
-    if (!canvas) {
-      console.log("Canvas ref is null");
-      return;
+    const ctx = canvas?.getContext("2d");
+
+    if (ctx) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
 
-    const ctx = canvas.getContext("2d");
-    if (!ctx) {
-      console.log("Canvas context is null");
-      return;
-    }
+    if (baseImageUrl && overlay && isMounted && strainType) {
+      const baseImg = new Image();
+      baseImg.crossOrigin = "anonymous";
+      baseImg.src = baseImageUrl;
+      baseImg.onload = () => {
+        ctx?.drawImage(baseImg, 0, 0, 1500, 1500);
 
-    const baseImg = new Image();
-    baseImg.src = baseImageUrl;
-
-    baseImg.onload = () => {
-      console.log("Base image loaded successfully:", baseImageUrl);
-      canvas.width = 1500;
-      canvas.height = 1500;
-      ctx.drawImage(baseImg, 0, 0, 1500, 1500);
-
-      if (overlay !== "None") {
         const overlayImg = new Image();
-        overlayImg.src = overlayImages[overlay]!;
-
-        overlayImg.onload = () => {
-          console.log("Overlay image loaded successfully:", overlayImages[overlay]);
-          ctx.drawImage(overlayImg, 0, 0, 1500, 1500);
-        };
-        overlayImg.onerror = (e) => {
-          console.log("Failed to load overlay image:", overlayImages[overlay], e);
-        };
-      }
-    };
-
-    baseImg.onerror = (e) => {
-      console.log("Failed to load base image:", baseImageUrl, e);
-    };
-  }, [baseImageUrl, overlay, isMounted]);
+        overlayImg.crossOrigin = "anonymous";
+        const overlayPath = overlayImages[overlay][strainType];
+        if (overlayPath) {
+          overlayImg.src = overlayPath;
+          overlayImg.onload = () => {
+            ctx?.drawImage(overlayImg, 0, 0, 1500, 1500);
+          };
+          overlayImg.onerror = () => {
+            setError("Error loading overlay image.");
+          };
+        }
+      };
+      baseImg.onerror = () => {
+        setError("Error loading base image
+.");
+      };
+    }
+  }, [baseImageUrl, overlay, isMounted, strainType]);
 
   const handleDownload = () => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const dataUrl = canvas.toDataURL("image/png");
-    const link = document.createElement("a");
-    link.href = dataUrl;
-    link.download = `canna-gm-${tokenId}-${overlay.replace(" ", "-").toLowerCase() || "no-overlay"}.png`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    if (canvasRef.current) {
+      const canvas = canvasRef.current;
+      const link = document.createElement("a");
+      link.download = \`canna-gm-\${tokenId}-\${overlay.replace(" ", "-").toLowerCase() || "no-overlay"}.png\`;
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    }
   };
-
-  if (!isMounted) {
-    return null;
-  }
 
   return (
     <>
-      {/* Set metadata using Head */}
       <Head>
         <title>Hempino Head Shop</title>
         <meta name="description" content="brought to you by digidreamoor" />
@@ -148,21 +154,26 @@ export default function Home() {
             Hempino Head Shop
           </h1>
 
-          {/* Token ID Input */}
+          {error && (
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+              <strong className="font-bold">Error:</strong> {error}
+            </div>
+          )}
+
           <div className="mb-4">
             <label className="block text-[#ff8098] font-semibold mb-2">
-              Token ID
+              Token ID (1-10000)
             </label>
             <input
-              type="text"
+              type="number"
+              min="1"
+              max="10000"
               value={tokenId}
               onChange={(e) => setTokenId(e.target.value)}
               className="w-full p-2 border-2 border-[#FF66CC] text-[#212121] rounded focus:outline-none focus:border-[#66CCFF] transition-all"
-              placeholder="Enter Token ID (e.g., 4916)"
             />
           </div>
 
-          {/* Overlay Dropdown */}
           <div className="mb-4">
             <label className="block text-[#ff8098] font-semibold mb-2">
               Canna Get A...
@@ -173,47 +184,21 @@ export default function Home() {
               className="w-full p-2 border-2 border-[#FF66CC] text-[#212121] rounded focus:outline-none focus:border-[#66CCFF] transition-all"
             >
               <option value="None">None</option>
-              <option value="GM Coffee Green">GM Coffee Green</option>
-              <option value="GM Coffee Purple">GM Coffee Purple</option>
-              <option value="GM Coffee Gold">GM Coffee Gold</option>
-              <option value="Taco Green">Taco Green</option>
-              <option value="Taco Purple">Taco Purple</option>
-              <option value="Taco Gold">Taco Gold</option>
+              <option value="GM Coffee">GM Coffee</option>
+              <option value="Taco">Taco</option>
+              <option value="Bearish">Bearish</option>
+              <option value="Canna Banana">Canna Banana</option>
             </select>
           </div>
 
-          {/* Preview */}
-          <div className="mb-4">
-            <h2 className="text-xl font-semibold text-[#ff8098] mb-2">
-              Preview
-            </h2>
-            {error ? (
-              <p className="text-red-500">{error}</p>
-            ) : baseImageUrl ? (
-              <canvas
-                ref={canvasRef}
-                className="w-full border-2 border-[#FF66CC] rounded"
-                style={{ maxWidth: "100%", height: "auto" }}
-              />
-            ) : (
-              <p className="text-gray-500">Loading image...</p>
-            )}
-          </div>
+          <canvas ref={canvasRef} width="1500" height="1500" className="mb-4 border-2 border-[#FF66CC] rounded" />
 
-          {/* Download Button */}
-          <div className="mt-4">
-            <button
-              onClick={handleDownload}
-              disabled={!baseImageUrl}
-              className={`w-full p-2 rounded text-white font-semibold transition-all ${
-                baseImageUrl
-                  ? "bg-[#FF66CC] hover:bg-[#FF3399]"
-                  : "bg-gray-400 cursor-not-allowed"
-              }`}
-            >
-              Download Image
-            </button>
-          </div>
+          <button
+            onClick={handleDownload}
+            className="bg-[#FF66CC] hover:bg-[#FF8098] text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition-all"
+          >
+            Download Image
+          </button>
         </div>
       </div>
     </>
